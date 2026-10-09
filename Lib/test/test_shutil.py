@@ -3214,16 +3214,22 @@ class TestMove(BaseTest, unittest.TestCase):
     def test_no_copied_dir_left_not_EXDEV(self):
         subdir = os.path.join(self.src_dir, "subdir")
         os.mkdir(subdir)
+        create_file(os.path.join(subdir, "bar"), b"egg")
         mode = stat.S_IREAD|stat.S_IEXEC
         os.chmod(self.src_dir, mode)
+
         new_dir = os.path.join(self.dst_dir, "new_dir")
         os.mkdir(new_dir)
-        create_file(os.path.join(new_dir, "foo"), b"egg")
+        create_file(os.path.join(new_dir, "bar"), b"not egg")
 
         if sys.platform == "win32":
             err = FileExistsError
         else:
             err = PermissionError
+        # shutil.move(subdir, new_dir)
+        # abc = os.listdir(self.src_dir)
+        # xyz = os.listdir(self.dst_dir)
+        # src_c = read_file(os.path.join(self
         self.assertRaises(err, shutil.move, subdir, new_dir)
         self.assertTrue("subdir" not in os.listdir(self.dst_dir))
 

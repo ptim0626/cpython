@@ -3218,7 +3218,7 @@ class TestMove(BaseTest, unittest.TestCase):
         os.chmod(self.src_dir, mode)
         new_dir = os.path.join(self.dst_dir, "new_dir")
         os.mkdir(new_dir)
-        create_file(os.path.join(new_dir, "foo2"), b"another spam")
+        create_file(os.path.join(new_dir, "foo"), b"egg")
 
         if sys.platform == "win32":
             err = FileExistsError

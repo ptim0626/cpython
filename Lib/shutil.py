@@ -944,6 +944,7 @@ def move(src, dst, copy_function=copy2):
     try:
         os.rename(src, real_dst)
     except OSError as e:
+        assert 0, f"{err}, {err.errno}, {errno.EXDEV}"
         if os.path.islink(src):
             linkto = os.readlink(src)
             _raise_not_EXDEV(e)
@@ -984,7 +985,6 @@ def _is_immutable(src):
     return hasattr(st, 'st_flags') and st.st_flags in immutable_states
 
 def _raise_not_EXDEV(err):
-    raise ValueError(f"{err}, {err.errno}, {errno.EXDEV}")
     if err.errno != errno.EXDEV:
         raise err from None
 

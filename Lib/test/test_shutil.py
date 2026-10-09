@@ -3220,6 +3220,7 @@ class TestMove(BaseTest, unittest.TestCase):
 
         new_dir = os.path.join(self.dst_dir, "new_dir")
         os.mkdir(new_dir)
+        create_file(os.path.join(new_dir, "barbar"), b"not egg")
 
 
         if sys.platform == "win32":

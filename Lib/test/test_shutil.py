@@ -3210,6 +3210,8 @@ class TestMove(BaseTest, unittest.TestCase):
         self.assertRaises(err, shutil.move, self.src_file, new_file)
         self.assertTrue(read_file(new_file) == "egg")
 
+    @unittest.skipIf(sys.platform == "win32", "Windows is ok with moving "
+                     "directory from where it is non-writable.")
     @os_helper.skip_unless_working_chmod
     def test_no_copied_dir_left_not_EXDEV(self):
         subdir = os.path.join(self.src_dir, "subdir")
@@ -3219,10 +3221,8 @@ class TestMove(BaseTest, unittest.TestCase):
         os.chmod(self.src_dir, mode)
         new_dir = os.path.join(self.dst_dir, "new_dir")
         os.mkdir(new_dir)
-
-        if sys.platform != "win32":
-            self.assertRaises(PermissionError, shutil.move, subdir, new_dir)
-        self.assertTrue("subdir" not in os.listdir(self.dst_dir))
+        self.assertRaises(PermissionError, shutil.move, subdir, new_dir)
+        self.assertTrue("subdir" not in os.listdir(new_dir))
 
     @os_helper.skip_unless_working_chmod
     @os_helper.skip_unless_symlink

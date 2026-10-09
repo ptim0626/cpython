@@ -3226,10 +3226,14 @@ class TestMove(BaseTest, unittest.TestCase):
             err = FileExistsError
         else:
             err = PermissionError
-        # shutil.move(subdir, new_dir)
-        # abc = os.listdir(self.src_dir)
-        # xyz = os.listdir(self.dst_dir)
-        # src_c = read_file(os.path.join(self
+
+        shutil.move(subdir, new_dir)
+        abc = os.listdir(self.src_dir)
+        xyz = os.listdir(self.dst_dir)
+        src_c = read_file(os.path.join(subdir, "bar"))
+        dst_c = read_file(os.path.join(new_dir, "bar"))
+        assert False, f"{abc}, {xyz}, {src_c}, {dst_c}"
+
         self.assertRaises(err, shutil.move, subdir, new_dir)
         self.assertTrue("subdir" not in os.listdir(self.dst_dir))
 

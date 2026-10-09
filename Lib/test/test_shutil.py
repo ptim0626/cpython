@@ -3198,11 +3198,12 @@ class TestMove(BaseTest, unittest.TestCase):
 
     @os_helper.skip_unless_working_chmod
     def test_no_copied_file_left_not_EXDEV(self):
-        mode = stat.S_IREAD|stat.S_IEXEC
+        # mode = stat.S_IREAD|stat.S_IEXEC
+        mode = stat.S_IREAD
         os.chmod(self.src_dir, mode)
         new_file = os.path.join(self.dst_dir, "bar")
-        os.unlink(self.src_file)
         ret = os.lstat(self.src_file)
+        os.unlink(self.src_file)
         assert ret.st_mode == 0, f"{ret.st_mode}"
         # self.assertRaises(PermissionError, shutil.move, self.src_file, new_file)
         # self.assertFalse(os.path.exists(new_file))

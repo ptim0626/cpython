@@ -3201,8 +3201,9 @@ class TestMove(BaseTest, unittest.TestCase):
         # mode = stat.S_IREAD|stat.S_IEXEC
         mode = stat.S_IREAD|stat.S_IEXEC
         os.chmod(self.src_dir, mode)
-        os.chmod(self.src_file, 0)
+        # os.chmod(self.src_file, 0)
         new_file = os.path.join(self.dst_dir, "bar")
+        create_file(new_file, b"egg")
         # ret = os.lstat(self.src_file)
         # os.unlink(self.src_file)
         # assert ret.st_mode == 0, f"{ret.st_mode}"

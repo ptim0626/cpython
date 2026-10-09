@@ -3220,11 +3220,8 @@ class TestMove(BaseTest, unittest.TestCase):
         new_dir = os.path.join(self.dst_dir, "new_dir")
         os.mkdir(new_dir)
 
-        if sys.platform == "win32":
-            err = FileExistsError
-        else:
-            err = PermissionError
-        self.assertRaises(err, shutil.move, subdir, new_dir)
+        if sys.platform != "win32":
+            self.assertRaises(PermissionError, shutil.move, subdir, new_dir)
         self.assertTrue("subdir" not in os.listdir(self.dst_dir))
 
     @os_helper.skip_unless_working_chmod

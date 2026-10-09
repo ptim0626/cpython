@@ -3201,8 +3201,7 @@ class TestMove(BaseTest, unittest.TestCase):
         mode = stat.S_IREAD|stat.S_IEXEC
         os.chmod(self.src_dir, mode)
         ret = os.lstat(self.src_dir)
-        print(oct(ret.st_mode))
-        assert ret.st_mode == 0
+        assert ret.st_mode == 0, f"{ret.st_mode}"
         # new_file = os.path.join(self.dst_dir, "bar")
         # self.assertRaises(PermissionError, shutil.move, self.src_file, new_file)
         # self.assertFalse(os.path.exists(new_file))
@@ -3215,8 +3214,7 @@ class TestMove(BaseTest, unittest.TestCase):
         mode = stat.S_IREAD|stat.S_IEXEC
         os.chmod(self.src_dir, mode)
         ret = os.lstat(self.src_dir)
-        print(oct(ret.st_mode))
-        assert ret.st_mode == 0
+        assert ret.st_mode == 0, f"{ret.st_mode}"
         # new_dir = os.path.join(self.dst_dir, "new_dir")
         # self.assertRaises(PermissionError, shutil.move, subdir, new_dir)
         # self.assertFalse(os.path.exists(new_dir))
@@ -3229,8 +3227,7 @@ class TestMove(BaseTest, unittest.TestCase):
         mode = stat.S_IREAD|stat.S_IEXEC
         os.chmod(self.src_dir, mode)
         ret = os.lstat(self.src_dir)
-        print(oct(ret.st_mode))
-        assert ret.st_mode == 0
+        assert ret.st_mode == 0, f"{ret.st_mode}"
         # new_link = os.path.join(self.dst_dir, "new_link")
         # self.assertRaises(PermissionError, shutil.move, old_link, new_link)
         # self.assertFalse(os.path.exists(new_link))

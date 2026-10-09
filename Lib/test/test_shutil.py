@@ -3220,7 +3220,7 @@ class TestMove(BaseTest, unittest.TestCase):
 
         new_dir = os.path.join(self.dst_dir, "new_dir")
         os.mkdir(new_dir)
-        create_file(os.path.join(new_dir, "bar"), b"not egg")
+        create_file(os.path.join(new_dir, "barbar"), b"not egg")
 
         if sys.platform == "win32":
             err = FileExistsError
@@ -3230,11 +3230,13 @@ class TestMove(BaseTest, unittest.TestCase):
         shutil.move(subdir, new_dir)
         abc = os.listdir(self.src_dir)
         xyz = os.listdir(self.dst_dir)
+        zzz = os.listdir(new_dir)
         # src_c = read_file(os.path.join(subdir, "bar"))
-        dst_c = read_file(os.path.join(new_dir, "bar"))
+        dst_c = read_file(os.path.join(new_dir, "barbar"))
         assert False, f"{abc}, {xyz}, {dst_c}"
 
         self.assertRaises(err, shutil.move, subdir, new_dir)
+        # self.assertTrue(read_file(os.path.join(nw_dir, "bar") != "not egg")
         self.assertTrue("subdir" not in os.listdir(self.dst_dir))
 
     @os_helper.skip_unless_working_chmod

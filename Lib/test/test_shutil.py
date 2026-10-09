@@ -3201,8 +3201,14 @@ class TestMove(BaseTest, unittest.TestCase):
         mode = stat.S_IREAD|stat.S_IEXEC
         os.chmod(self.src_dir, mode)
         new_file = os.path.join(self.dst_dir, "bar")
-        self.assertRaises(PermissionError, shutil.move, self.src_file, new_file)
-        self.assertFalse(os.path.exists(new_file))
+        create_file(new_file, b"egg")
+
+        if sys.platform == "win32":
+            err = FileExistsError
+        else:
+            err = PermissionError
+        self.assertRaises(err, shutil.move, self.src_file, new_file)
+        self.assertTrue(read_file(new_file) == "egg")
 
     @os_helper.skip_unless_working_chmod
     def test_no_copied_dir_left_not_EXDEV(self):
@@ -3212,8 +3218,14 @@ class TestMove(BaseTest, unittest.TestCase):
         mode = stat.S_IREAD|stat.S_IEXEC
         os.chmod(self.src_dir, mode)
         new_dir = os.path.join(self.dst_dir, "new_dir")
-        self.assertRaises(PermissionError, shutil.move, subdir, new_dir)
-        self.assertFalse(os.path.exists(new_dir))
+        os.mkdir(new_dir)
+
+        if sys.platform == "win32":
+            err = FileExistsError
+        else:
+            err = PermissionError
+        self.assertRaises(err, shutil.move, subdir, new_dir)
+        self.assertTrue("subdir" not in os.listdir(self.dst_dir))
 
     @os_helper.skip_unless_working_chmod
     @os_helper.skip_unless_symlink
@@ -3223,8 +3235,16 @@ class TestMove(BaseTest, unittest.TestCase):
         mode = stat.S_IREAD|stat.S_IEXEC
         os.chmod(self.src_dir, mode)
         new_link = os.path.join(self.dst_dir, "new_link")
-        self.assertRaises(PermissionError, shutil.move, old_link, new_link)
-        self.assertFalse(os.path.exists(new_link))
+        foo2 = os.path.join(self.dst_dir, "foo2")
+        create_file(foo2, b"egg")
+        os.symlink(foo2, new_link)
+
+        if sys.platform == "win32":
+            err = FileExistsError
+        else:
+            err = PermissionError
+        self.assertRaises(err, shutil.move, old_link, new_link)
+        self.assertTrue(read_file(new_link) == "egg")
 
 
 class TestCopyFile(unittest.TestCase):

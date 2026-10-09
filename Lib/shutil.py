@@ -944,7 +944,7 @@ def move(src, dst, copy_function=copy2):
     try:
         os.rename(src, real_dst)
     except OSError as e:
-        assert 0, f"{err}, {err.errno}, {errno.EXDEV}"
+        # assert 0, f"{e}, {e.errno}, {errno.EXDEV}"
         if os.path.islink(src):
             linkto = os.readlink(src)
             _raise_not_EXDEV(e)

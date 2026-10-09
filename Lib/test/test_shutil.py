@@ -3218,7 +3218,7 @@ class TestMove(BaseTest, unittest.TestCase):
         mode = stat.S_IREAD|stat.S_IEXEC
         os.chmod(self.src_dir, mode)
 
-        new_dir = os.path.join(self.dst_dir, "new_dir")
+        new_dir = os.path.join(self.dst_dir, "subdir")
         os.mkdir(new_dir)
         create_file(os.path.join(new_dir, "barbar"), b"not egg")
 
@@ -3228,7 +3228,7 @@ class TestMove(BaseTest, unittest.TestCase):
         else:
             err = PermissionError
 
-        real_dst = shutil.move(subdir, new_dir)
+        real_dst = shutil.move(subdir, self.dst_dir)
         # os.rename(subdir, new_dir)
         abc = os.listdir(self.src_dir)
         xyz = os.listdir(self.dst_dir)

@@ -3203,11 +3203,11 @@ class TestMove(BaseTest, unittest.TestCase):
         os.chmod(self.src_dir, mode)
         os.chmod(self.src_file, 0)
         new_file = os.path.join(self.dst_dir, "bar")
-        ret = os.lstat(self.src_file)
-        os.unlink(self.src_file)
-        assert ret.st_mode == 0, f"{ret.st_mode}"
-        # self.assertRaises(PermissionError, shutil.move, self.src_file, new_file)
-        # self.assertFalse(os.path.exists(new_file))
+        # ret = os.lstat(self.src_file)
+        # os.unlink(self.src_file)
+        # assert ret.st_mode == 0, f"{ret.st_mode}"
+        self.assertRaises(PermissionError, shutil.move, self.src_file, new_file)
+        self.assertFalse(os.path.exists(new_file))
 
     # @os_helper.skip_unless_working_chmod
     # def test_no_copied_dir_left_not_EXDEV(self):

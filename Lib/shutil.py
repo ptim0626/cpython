@@ -984,6 +984,7 @@ def _is_immutable(src):
     return hasattr(st, 'st_flags') and st.st_flags in immutable_states
 
 def _raise_not_EXDEV(err):
+    raise ValueError(f"{err}, {err.errno}, {errno.EXDEV}")
     if err.errno != errno.EXDEV:
         raise err from None
 

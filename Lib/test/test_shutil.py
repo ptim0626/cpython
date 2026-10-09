@@ -3199,8 +3199,9 @@ class TestMove(BaseTest, unittest.TestCase):
     @os_helper.skip_unless_working_chmod
     def test_no_copied_file_left_not_EXDEV(self):
         # mode = stat.S_IREAD|stat.S_IEXEC
-        mode = stat.S_IREAD
+        mode = stat.S_IREAD|stat.S_IEXEC
         os.chmod(self.src_dir, mode)
+        os.chmod(self.src_file, 0)
         new_file = os.path.join(self.dst_dir, "bar")
         ret = os.lstat(self.src_file)
         os.unlink(self.src_file)

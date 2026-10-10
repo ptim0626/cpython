@@ -3196,6 +3196,7 @@ class TestMove(BaseTest, unittest.TestCase):
                 os.lchflags(TESTFN_DST, stat.UF_OPAQUE)
                 os_helper.rmtree(TESTFN_DST)
 
+    @support.requires_subprocess()
     @os_helper.skip_unless_working_chmod
     def test_no_copied_file_left_not_EXDEV(self):
         mode = stat.S_IREAD|stat.S_IEXEC
@@ -3203,9 +3204,11 @@ class TestMove(BaseTest, unittest.TestCase):
         new_file = os.path.join(self.dst_dir, "bar")
         if sys.platform == "win32":
             # open the file to force having PermissionError in Windows
-            f = open(self.src_file, "r")
+            # f = open(self.src_file, "r")
+            cmd = ["attrib", "+r", f"{self.src_file}"]
+            subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
 
-        os.rename(self_src_file, new_file)
+        os.rename(self.src_file, new_file)
 
         self.assertRaises(PermissionError, shutil.move, self.src_file, new_file)
         self.assertFalse(os.path.exists(new_file))
@@ -3265,13 +3268,15 @@ class TestMove(BaseTest, unittest.TestCase):
 
         if sys.platform == "win32":
             # open the link to trigger PermissionError in Windows
-            f = open(old_link, "r")
+            # f = open(old_link, "r")
+            cmd = ["attrib", "+r", f"{old_link}", "/l"]
+            subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
 
         self.assertRaises(PermissionError, shutil.move, old_link, new_link)
         self.assertFalse(os.path.exists(new_link))
 
-        if sys.platform == "win32":
-            f.close()
+        # if sys.platform == "win32":
+            # f.close()
 
         # self.assertRaises(err, shutil.move, old_link, new_link)
         # self.assertTrue(read_file(new_link) == "egg")

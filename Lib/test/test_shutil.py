@@ -3196,21 +3196,13 @@ class TestMove(BaseTest, unittest.TestCase):
                 os.lchflags(TESTFN_DST, stat.UF_OPAQUE)
                 os_helper.rmtree(TESTFN_DST)
 
-
-    @os_helper.skip_unless_working_chmod
-    def test_no_copied_file_left_not_EXDEV(self):
-        mode = stat.S_IREAD|stat.S_IEXEC
-        os.chmod(self.src_dir, mode)
+    @unittest.mock.patch('os.rename')
+    def test_no_copied_file_left_not_EXDEV(self, mock_rename):
         new_file = os.path.join(self.dst_dir, "bar")
-        if sys.platform == "win32":
-            builtin_rename = os.rename
-            os.rename = lambda: raise PermissionError("abc")
-
-        self.assertRaises(PermissionError, shutil.move, self.src_file, new_file)
+        mock_rename.side_effect = PermissionError("not EXDEV")
+        with self.assertRaises(PermissionError):
+            shutil.move(self.src_file, new_file)
         self.assertFalse(os.path.exists(new_file))
-
-        if sys.platform == "win32":
-            os.rename = builtin_rename
 
     # @os_helper.skip_unless_working_chmod
     # def test_no_copied_dir_left_not_EXDEV(self):

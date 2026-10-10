@@ -3196,52 +3196,34 @@ class TestMove(BaseTest, unittest.TestCase):
                 os.lchflags(TESTFN_DST, stat.UF_OPAQUE)
                 os_helper.rmtree(TESTFN_DST)
 
-    @os_helper.skip_unless_working_chmod
-    def test_no_copied_file_left_not_EXDEV(self):
-        mode = stat.S_IREAD|stat.S_IEXEC
-        os.chmod(self.src_dir, mode)
+    @unittest.mock.patch('os.rename')
+    def test_no_copied_file_left_not_EXDEV(self, mock_rename):
         new_file = os.path.join(self.dst_dir, "bar")
-        create_file(new_file, b"egg")
+        mock_rename.side_effect = PermissionError("not EXDEV")
+        with self.assertRaises(PermissionError):
+            shutil.move(self.src_file, new_file)
+        self.assertFalse(os.path.exists(new_file))
 
-        if sys.platform == "win32":
-            err = FileExistsError
-        else:
-            err = PermissionError
-        self.assertRaises(err, shutil.move, self.src_file, new_file)
-        self.assertTrue(read_file(new_file) == "egg")
-
-    @unittest.skipIf(sys.platform == "win32", "Windows is ok with moving "
-                     "directory from where it is non-writable.")
-    @os_helper.skip_unless_working_chmod
-    def test_no_copied_dir_left_not_EXDEV(self):
+    @unittest.mock.patch('os.rename')
+    def test_no_copied_dir_left_not_EXDEV(self, mock_rename):
         subdir = os.path.join(self.src_dir, "subdir")
         os.mkdir(subdir)
-        create_file(os.path.join(subdir, "foo2"), b"another spam")
-        mode = stat.S_IREAD|stat.S_IEXEC
-        os.chmod(self.src_dir, mode)
         new_dir = os.path.join(self.dst_dir, "new_dir")
-        os.mkdir(new_dir)
-        self.assertRaises(PermissionError, shutil.move, subdir, new_dir)
-        self.assertTrue("subdir" not in os.listdir(new_dir))
+        mock_rename.side_effect = PermissionError("not EXDEV")
+        with self.assertRaises(PermissionError):
+            shutil.move(subdir, new_dir)
+        self.assertFalse(os.path.exists(new_dir))
 
-    @os_helper.skip_unless_working_chmod
+    @unittest.mock.patch('os.rename')
     @os_helper.skip_unless_symlink
-    def test_no_copied_symlink_left_not_EXDEV(self):
+    def test_no_copied_symlink_left_not_EXDEV(self, mock_rename):
         old_link = os.path.join(self.src_dir, "bar")
-        os.symlink(self.src_file, old_link)
-        mode = stat.S_IREAD|stat.S_IEXEC
-        os.chmod(self.src_dir, mode)
+        os.symlink(os.path.basename(self.src_file), old_link)
         new_link = os.path.join(self.dst_dir, "new_link")
-        foo2 = os.path.join(self.dst_dir, "foo2")
-        create_file(foo2, b"egg")
-        os.symlink(foo2, new_link)
-
-        if sys.platform == "win32":
-            err = FileExistsError
-        else:
-            err = PermissionError
-        self.assertRaises(err, shutil.move, old_link, new_link)
-        self.assertTrue(read_file(new_link) == "egg")
+        mock_rename.side_effect = PermissionError("not EXDEV")
+        with self.assertRaises(PermissionError):
+            shutil.move(old_link, new_link)
+        self.assertFalse(os.path.exists(new_link))
 
 
 class TestCopyFile(unittest.TestCase):

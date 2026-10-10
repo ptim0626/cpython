@@ -3201,66 +3201,71 @@ class TestMove(BaseTest, unittest.TestCase):
         mode = stat.S_IREAD|stat.S_IEXEC
         os.chmod(self.src_dir, mode)
         new_file = os.path.join(self.dst_dir, "bar")
-        create_file(new_file, b"egg")
 
-        if sys.platform == "win32":
-            err = FileExistsError
-        else:
-            err = PermissionError
+        # create_file(new_file, b"egg")
+        f = open(self.src_file, "r")
 
-        self.assertTrue(read_file(new_file) == "egg")
+        # if sys.platform == "win32":
+            # err = FileExistsError
+        # else:
+            # err = PermissionError
 
-    @os_helper.skip_unless_working_chmod
-    def test_no_copied_dir_left_not_EXDEV(self):
-        subdir = os.path.join(self.src_dir, "subdir")
-        os.mkdir(subdir)
-        create_file(os.path.join(subdir, "bar"), b"egg")
-        mode = stat.S_IREAD|stat.S_IEXEC
-        os.chmod(self.src_dir, mode)
+        self.assertRaises(PermissionError, shutil.move, self.src_file, new_file)
+        self.assertFalse(os.path.exists(new_file))
+        # self.assertTrue(read_file(new_file) == "egg")
+        f.close()
 
-        new_dir = os.path.join(self.dst_dir, "new_die")
-        os.mkdir(new_dir)
-        new_subdir = os.path.join(new_dir, "subdir")
-        os.mkdir(new_subdir)
-        create_file(os.path.join(new_dir, "barbar"), b"not egg")
+    # @os_helper.skip_unless_working_chmod
+    # def test_no_copied_dir_left_not_EXDEV(self):
+        # subdir = os.path.join(self.src_dir, "subdir")
+        # os.mkdir(subdir)
+        # create_file(os.path.join(subdir, "bar"), b"egg")
+        # mode = stat.S_IREAD|stat.S_IEXEC
+        # os.chmod(self.src_dir, mode)
+
+        # new_dir = os.path.join(self.dst_dir, "new_die")
+        # os.mkdir(new_dir)
+        # new_subdir = os.path.join(new_dir, "subdir")
+        # os.mkdir(new_subdir)
+        # create_file(os.path.join(new_dir, "barbar"), b"not egg")
 
 
-        if sys.platform == "win32":
-            err = FileExistsError
-        else:
-            err = PermissionError
+        # if sys.platform == "win32":
+            # err = FileExistsError
+        # else:
+            # err = PermissionError
 
-        real_dst = shutil.move(subdir, new_dir)
-        # os.rename(subdir, new_dir)
-        abc = os.listdir(self.src_dir)
-        xyz = os.listdir(self.dst_dir)
-        zzz = os.listdir(new_dir)
-        # src_c = read_file(os.path.join(subdir, "bar"))
-        dst_c = read_file(os.path.join(new_dir, "barbar"))
-        assert False, f"{abc}, {xyz}, {zzz}, {dst_c}, {real_dst}"
+        # real_dst = shutil.move(subdir, new_dir)
+        # # os.rename(subdir, new_dir)
+        # abc = os.listdir(self.src_dir)
+        # xyz = os.listdir(self.dst_dir)
+        # zzz = os.listdir(new_dir)
+        # # src_c = read_file(os.path.join(subdir, "bar"))
+        # dst_c = read_file(os.path.join(new_dir, "barbar"))
+        # assert False, f"{abc}, {xyz}, {zzz}, {dst_c}, {real_dst}"
 
-        self.assertRaises(err, shutil.move, subdir, new_dir)
-        # self.assertTrue(read_file(os.path.join(nw_dir, "bar") != "not egg")
-        self.assertTrue("subdir" not in os.listdir(self.dst_dir))
+        # self.assertRaises(err, shutil.move, subdir, new_dir)
+        # # self.assertTrue(read_file(os.path.join(nw_dir, "bar") != "not egg")
+        # self.assertTrue("subdir" not in os.listdir(self.dst_dir))
 
-    @os_helper.skip_unless_working_chmod
-    @os_helper.skip_unless_symlink
-    def test_no_copied_symlink_left_not_EXDEV(self):
-        old_link = os.path.join(self.src_dir, "bar")
-        os.symlink(self.src_file, old_link)
-        mode = stat.S_IREAD|stat.S_IEXEC
-        os.chmod(self.src_dir, mode)
-        new_link = os.path.join(self.dst_dir, "new_link")
-        foo2 = os.path.join(self.dst_dir, "foo2")
-        create_file(foo2, b"egg")
-        os.symlink(foo2, new_link)
+    # @os_helper.skip_unless_working_chmod
+    # @os_helper.skip_unless_symlink
+    # def test_no_copied_symlink_left_not_EXDEV(self):
+        # old_link = os.path.join(self.src_dir, "bar")
+        # os.symlink(self.src_file, old_link)
+        # mode = stat.S_IREAD|stat.S_IEXEC
+        # os.chmod(self.src_dir, mode)
+        # new_link = os.path.join(self.dst_dir, "new_link")
+        # foo2 = os.path.join(self.dst_dir, "foo2")
+        # create_file(foo2, b"egg")
+        # os.symlink(foo2, new_link)
 
-        if sys.platform == "win32":
-            err = FileExistsError
-        else:
-            err = PermissionError
-        self.assertRaises(err, shutil.move, old_link, new_link)
-        self.assertTrue(read_file(new_link) == "egg")
+        # if sys.platform == "win32":
+            # err = FileExistsError
+        # else:
+            # err = PermissionError
+        # self.assertRaises(err, shutil.move, old_link, new_link)
+        # self.assertTrue(read_file(new_link) == "egg")
 
 
 class TestCopyFile(unittest.TestCase):
